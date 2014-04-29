@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -10,6 +11,8 @@ namespace TodoList.Controllers
     {
         public ActionResult Index()
         {
+            var logger = LogManager.GetCurrentClassLogger();
+            logger.InfoFormat("Currently logged user is {0}", User.Identity.Name);
             return View();
         }
 
