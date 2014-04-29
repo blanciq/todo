@@ -34,5 +34,19 @@ namespace TodoList.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public ActionResult ChangeState(long itemId, bool done)
+        {
+            var context = new TodoDbContext();
+
+            var item = context.TodoItems.First(x => x.Id == itemId);
+
+            item.IsFinished = done;
+
+            context.SaveChanges();
+
+            return Json(new {success = true});
+        }
     }
 }

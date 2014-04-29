@@ -8,7 +8,7 @@
     <thead></thead>
     <tbody>
         @foreach (var item in @Model) { 
-        <tr>
+        <tr data-id="@item.Id">
             <td class="@(item.IsFinished ? "crossed-over" : string.Empty)">@item.Title</td>
             <td><input type="checkbox" @(item.IsFinished ? "checked=\"checked\"" : string.Empty) /></td>
         </tr>
@@ -20,24 +20,40 @@
 
 @section Scripts {
     <script type="text/javascript">
-        $(function () {
-            $("#add-todo-item").click(function (event) {
+        $(function() {
+            $("#add-todo-item").click(function(event) {
                 event.preventDefault();
-                
+
                 $.get('@Url.Action("Add")')
-                    .done(function (data) {
+                    .done(function(data) {
                         var form = $("<div>").append(data);
                         form.dialog();
                     });
 
             });
 
-            $('input[type="checkbox"]').each(function () {
-                var $this = $(this);
-                if ($this.attr('checked')) {
-                    $this.closest('tr').find('td:first').css('text-decoration', 'line-through');
-                }
+            $('input[type="checkbox"]').change(function() {
+                var isDone = $(this).prop('checked');
+                var id = $(this).closest("tr").data("id");
+                console.log("Todo item id is", id);
+                console.log("After checking checkbox it is", isDone);
+                $.blockUI({ message: '<span>wait a moment</span>' });
+                $.ajax({
+                    url: '@Url.Action("ChangeState")',
+                    type: 'POST',
+                    data: { itemId: id, done: isDone },
+                }).done(function () {
+                    $.unblockUI();
+                    var message = $("<div>").append("Success!!");
+                    message.dialog({
+                        modal: true,
+                        Ok: function() {
+                            $(this).dialog('close');
+                        }
+                    });
+                }).fail(function() { $.unblockUI(); });
             });
+
         });
     </script>
 }
