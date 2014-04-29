@@ -1,0 +1,44 @@
+﻿@model IList<TodoList.Models.Entities.TodoItem>
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>ToDo list:</h2>
+<table class="table table-hover" style="width: 200px">
+    <thead></thead>
+    <tbody>
+        @foreach (var item in @Model) { 
+        <tr>
+            <td class="@(item.IsFinished ? "crossed-over" : string.Empty)">@item.Title</td>
+            <td><input type="checkbox" @(item.IsFinished ? "checked=\"checked\"" : string.Empty) /></td>
+        </tr>
+        }
+    </tbody>
+</table>
+<a id="add-todo-item" href="#" class="btn btn-primary">Add item</a>
+
+
+@section Scripts {
+    <script type="text/javascript">
+        $(function () {
+            $("#add-todo-item").click(function (event) {
+                event.preventDefault();
+                
+                $.get('@Url.Action("Add")')
+                    .done(function (data) {
+                        var form = $("<div>").append(data);
+                        form.dialog();
+                    });
+
+            });
+
+            $('input[type="checkbox"]').each(function () {
+                var $this = $(this);
+                if ($this.attr('checked')) {
+                    $this.closest('tr').find('td:first').css('text-decoration', 'line-through');
+                }
+            });
+        });
+    </script>
+}
+
